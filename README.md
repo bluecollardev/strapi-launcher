@@ -30,7 +30,7 @@ You can create a new project by running this command.
 
 Simply run `yarn build` to build using defaults. Run `yarn build -h` to view help.
 
-Options:
+#### Options:
 ```
 -i, --info                             Output the current CLI version number
 -t, --type <type>                      Which images to build (all, strapi, base) (default: "all")
@@ -40,6 +40,20 @@ Options:
 -h, --help
 ```
 
+#### Example
+
+You can create a strapi project that will connect to a remote postgres database like so:
+
 ```shell
-docker run -p 1337:1337 -v `pwd`/app:/srv/app -it strapi/strapi:4.1.12-node16-alpine
+docker run -it \
+  -p 1337:1337 \
+  -p 5432:5432 \
+  -v `pwd`/app:/srv/app \
+  -e DATABASE_CLIENT=postgres \
+  -e DATABASE_NAME=strapi_demo \
+  -e DATABASE_HOST=host.docker.internal \
+  -e DATABASE_PORT=5432 \
+  -e DATABASE_USERNAME=postgres \
+  -e DATABASE_PASSWORD=postgres \
+  strapi/strapi:4.1.12-node16-alpine
 ```
