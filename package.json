@@ -1,0 +1,35 @@
+{
+  "name": "bluecollar-strapi-launcher",
+  "version": "0.0.1",
+  "description": "Strapi v4 launcher",
+  "author": "Blue Collar Software Development",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bluecollardev"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bluecollardev"
+  },
+  "homepage": "https://github.com/bluecollardev",
+  "scripts": {
+    "up:with-mongo": "docker compose -f compose/with-mongo/docker-compose.yml up --build",
+    "up:with-mysql": "docker compose -f compose/with-mysql/docker-compose.yml up --build",
+    "up:with-postgres": "docker compose -f compose/with-postgresql/docker-compose.yml up --build",
+    "build": "bin/build.mjs",
+    "debug-build": "node --inspect-brk bin/build.mjs",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "chalk": "latest",
+    "commander": "^9.1.0",
+    "execa": "latest",
+    "got": "latest",
+    "semver": "latest"
+  },
+  "devDependencies": {
+    "eslint": "latest",
+    "prettier": "latest"
+  }
+}
