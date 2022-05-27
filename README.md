@@ -24,23 +24,8 @@ https://github.com/strapi/strapi-docker
 
 When running this image, strapi will check if there is a project in the /src/app folder of the container. 
 If there is nothing then it will run the strapi new command in the container /srv/app folder.
-You can create a new project by running this command.
 
-### Building images
-
-Simply run `yarn build` to build using defaults. Run `yarn build -h` to view help.
-
-#### Options:
-```
--i, --info                             Output the current CLI version number
--t, --type <type>                      Which images to build (all, strapi, base) (default: "all")
--p, --push                             Push the image(s) after creating
--v, --strapi-version <strapiVersion>   Strapi version to build (default: "latest")
--n, --node-versions <nodeVersions...>  Node (default: ["16"])
--h, --help
-```
-
-#### Example
+#### More Examples
 
 You can create a strapi project that will connect to a remote postgres database like so:
 
@@ -56,4 +41,18 @@ docker run -it \
   -e DATABASE_USERNAME=postgres \
   -e DATABASE_PASSWORD=postgres \
   strapi/strapi:4.1.12-node16-alpine
+```
+
+### Building images
+
+Simply run `yarn build` to build using defaults. Run `yarn build -h` to view help.
+
+#### Options:
+```
+-i, --info                             Output the current CLI version number
+-t, --type <type>                      Which images to build (all, strapi, base) (default: "all")
+-p, --push                             Push the image(s) after creating
+-v, --strapi-version <strapiVersion>   Strapi version to build (default: "latest")
+-n, --node-versions <nodeVersions...>  Node (default: ["16"])
+-h, --help
 ```
