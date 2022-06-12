@@ -16,3 +16,13 @@ export function execDocker(args) {
     stdio: 'inherit',
   });
 }
+
+export function getBuildXArgs(buildxPlatform) {
+  const buildXCmd = !buildxPlatform ? [] : [ 'buildx' ];
+
+  const buildXArgs = !buildxPlatform ? [] : [
+    '--platform',
+    buildxPlatform
+  ]
+  return { buildXCmd, buildXArgs }
+}
