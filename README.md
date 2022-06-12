@@ -49,10 +49,36 @@ Simply run `yarn build` to build using defaults. Run `yarn build -h` to view hel
 
 #### Options:
 ```
--i, --info                             Output the current CLI version number
--t, --type <type>                      Which images to build (all, strapi, base) (default: "all")
--p, --push                             Push the image(s) after creating
--v, --strapi-version <strapiVersion>   Strapi version to build (default: "latest")
--n, --node-versions <nodeVersions...>  Node (default: ["16"])
--h, --help
+-i, --info                                                  Output the current CLI version number
+-t, --type <type>                                           Which images to build (all, strapi, base) (default: "all")
+-p, --push                                                  Push the image(s) after creating
+-v, --strapi-version <strapiVersion>                        Strapi version to build (default: "latest")
+-n, --node-versions <nodeVersions...>                       Node (default: ["16"])
+-x, --image-base-name-override <imageBaseNameOverride>      Override the base image name (default: "strapi/base")
+-y, --image-strapi-name-override <imageStrapiNameOverride>  Override the strapi image name (default: "strapi/strapi")
+-h, --help                                                  display help for command
+```
+
+#### Examples:
+- Private registries (custom image name)
+
+Create a custom image name for the base image and/or final strapi image (to prefix tags). For example to change both (using default option -t 'all').
+```
+yarn run build -x myregistry.com/base -y myregistry.com/strapi
+```
+Will result in the following tags:
+```
+---------------------------------------
+Images created:
+- myregistry.com/base:16
+- myregistry.com/base:latest
+- myregistry.com/base:16-alpine
+- myregistry.com/base:alpine
+- myregistry.com/strapi:4.1.12-node16
+- myregistry.com/strapi:4.1.12
+- myregistry.com/strapi:latest
+- myregistry.com/strapi:4.1.12-node16-alpine
+- myregistry.com/strapi:4.1.12-alpine
+- myregistry.com/strapi:alpine
+---------------------------------------
 ```

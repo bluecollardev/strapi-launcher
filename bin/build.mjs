@@ -4,7 +4,7 @@
 import { Command } from 'commander';
 import { buildBaseImages } from './base.mjs';
 import { buildStrapiImages } from './strapi.mjs';
-import { LATEST_NODE_VERSION } from './constants.mjs'
+import { BASE_IMAGE_NAME, LATEST_NODE_VERSION, STRAPI_IMAGE_NAME } from './constants.mjs'
 
 const program = new Command();
 
@@ -18,7 +18,10 @@ program
   .option('-p, --push', 'Push the image(s) after creating')
   .option('-v, --strapi-version <strapiVersion>', 'Strapi version to build', 'latest')
   .option('-n, --node-versions <nodeVersions...>', 'Node', [LATEST_NODE_VERSION])
+  .option('-x, --image-base-name-override <imageBaseNameOverride>', 'Override the base image name', BASE_IMAGE_NAME)
+  .option('-y, --image-strapi-name-override <imageStrapiNameOverride>', 'Override the strapi image name', STRAPI_IMAGE_NAME)
   .action((options) => {
+    console.log('optionshere', options)
     run(options).catch(error => {
       console.error(error);
       process.exit(1);
@@ -27,22 +30,22 @@ program
 
 program.parse();
 
-async function run({ type, push, strapiVersion, nodeVersions }) {
+async function run({ type, push, strapiVersion, nodeVersions, imageBaseNameOverride, imageStrapiNameOverride }) {
   switch (type) {
     case 'base': {
-      const images = await buildBaseImages({ shouldPush: push, nodeVersions });
+      const images = await buildBaseImages({ shouldPush: push, nodeVersions, imageBaseNameOverride });
       logImages(images);
       break;
     }
     case 'strapi': {
-      const images = await buildStrapiImages({ version: strapiVersion, shouldPush: push, nodeVersions });
+      const images = await buildStrapiImages({ version: strapiVersion, shouldPush: push, nodeVersions, imageStrapiNameOverride });
       logImages(images);
       break;
     }
     case 'all':
     default: {
-      const baseImages = await buildBaseImages({ shouldPush: push, nodeVersions });
-      const strapiImages = await buildStrapiImages({ version: strapiVersion, shouldPush: push, nodeVersions });
+      const baseImages = await buildBaseImages({ shouldPush: push, nodeVersions, imageBaseNameOverride });
+      const strapiImages = await buildStrapiImages({ version: strapiVersion, shouldPush: push, nodeVersions, imageStrapiNameOverride });
       logImages([...baseImages, ...strapiImages]);
       break;
     }
