@@ -18,6 +18,7 @@ program
   .option('-p, --push', 'Push the image(s) after creating')
   .option('-v, --strapi-version <strapiVersion>', 'Strapi version to build', 'latest')
   .option('-n, --node-versions <nodeVersions...>', 'Node', [LATEST_NODE_VERSION])
+  .option('-b, --buildx-platform <buildxPlatform>', 'IF exists THEN docker buildx build --platform <buildxPlatform> is used. ELSE docker build...')
   .action((options) => {
     run(options).catch(error => {
       console.error(error);
@@ -27,22 +28,22 @@ program
 
 program.parse();
 
-async function run({ type, push, strapiVersion, nodeVersions }) {
+async function run({ type, push, strapiVersion, nodeVersions, buildxPlatform }) {
   switch (type) {
     case 'base': {
-      const images = await buildBaseImages({ shouldPush: push, nodeVersions });
+      const images = await buildBaseImages({ shouldPush: push, nodeVersions, buildxPlatform });
       logImages(images);
       break;
     }
     case 'strapi': {
-      const images = await buildStrapiImages({ version: strapiVersion, shouldPush: push, nodeVersions });
+      const images = await buildStrapiImages({ version: strapiVersion, shouldPush: push, nodeVersions, buildxPlatform });
       logImages(images);
       break;
     }
     case 'all':
     default: {
-      const baseImages = await buildBaseImages({ shouldPush: push, nodeVersions });
-      const strapiImages = await buildStrapiImages({ version: strapiVersion, shouldPush: push, nodeVersions });
+      const baseImages = await buildBaseImages({ shouldPush: push, nodeVersions, buildxPlatform });
+      const strapiImages = await buildStrapiImages({ version: strapiVersion, shouldPush: push, nodeVersions, buildxPlatform });
       logImages([...baseImages, ...strapiImages]);
       break;
     }
