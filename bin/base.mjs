@@ -1,17 +1,18 @@
 #!/usr/bin/env node
 'use strict';
 
-import { execDocker } from './utils.mjs';
+import { execDocker, getBuildXArgs } from './utils.mjs';
 import { NODE_VERSIONS, BASE_IMAGE_NAME, LATEST_NODE_VERSION } from './constants.mjs';
 
-export async function buildBaseImages({ shouldPush = false, nodeVersions = [...NODE_VERSIONS] } = {}) {
+export async function buildBaseImages({ shouldPush = false, nodeVersions = [...NODE_VERSIONS], buildxPlatform = false } = {}) {
   const createdTags = [];
   for (const nodeVersion of nodeVersions) {
-    const tags = await buildBaseImage({ nodeVersion, shouldPush });
+    const tags = await buildBaseImage({ nodeVersion, shouldPush, buildxPlatform });
     const alpineTags = await buildBaseImage({
       nodeVersion,
       alpine: true,
       shouldPush,
+      buildxPlatform
     });
 
     createdTags.push(...tags, ...alpineTags);
@@ -20,13 +21,17 @@ export async function buildBaseImages({ shouldPush = false, nodeVersions = [...N
   return createdTags.map(tag => `${BASE_IMAGE_NAME}:${tag}`);
 }
 
-async function buildBaseImage({ nodeVersion, alpine, shouldPush = false }) {
+async function buildBaseImage({ nodeVersion, alpine, shouldPush = false, buildxPlatform = false }) {
   let tmpImg = `${BASE_IMAGE_NAME}:tmp`;
 
+  const { buildXCmd, buildXArgs } = getBuildXArgs(buildxPlatform);
+
   await execDocker([
+    ...buildXCmd,
     'build',
     '--build-arg',
     `NODE_VERSION=${nodeVersion}${alpine ? '-alpine' : ''}`,
+    ...buildXArgs,
     '-t',
     tmpImg,
     '--progress=plain',
