@@ -20,6 +20,7 @@ program
   .option('-n, --node-versions <nodeVersions...>', 'Node', [LATEST_NODE_VERSION])
   .option('-x, --image-base-name-override <imageBaseNameOverride>', 'Override the base image name', BASE_IMAGE_NAME)
   .option('-y, --image-strapi-name-override <imageStrapiNameOverride>', 'Override the strapi image name', STRAPI_IMAGE_NAME)
+  .option('-b, --buildx-platform <buildxPlatform>', 'IF exists THEN docker buildx build --platform <buildxPlatform> is used. ELSE docker build...')
   .action((options) => {
     console.log('optionshere', options)
     run(options).catch(error => {
@@ -30,22 +31,22 @@ program
 
 program.parse();
 
-async function run({ type, push, strapiVersion, nodeVersions, imageBaseNameOverride, imageStrapiNameOverride }) {
+async function run({ type, push, strapiVersion, nodeVersions, imageBaseNameOverride, imageStrapiNameOverride, buildxPlatform }) {
   switch (type) {
     case 'base': {
-      const images = await buildBaseImages({ shouldPush: push, nodeVersions, imageBaseNameOverride });
+      const images = await buildBaseImages({ shouldPush: push, nodeVersions, imageBaseNameOverride, buildxPlatform });
       logImages(images);
       break;
     }
     case 'strapi': {
-      const images = await buildStrapiImages({ version: strapiVersion, shouldPush: push, nodeVersions, imageStrapiNameOverride });
+      const images = await buildStrapiImages({ version: strapiVersion, shouldPush: push, nodeVersions, imageStrapiNameOverride, buildxPlatform });
       logImages(images);
       break;
     }
     case 'all':
     default: {
-      const baseImages = await buildBaseImages({ shouldPush: push, nodeVersions, imageBaseNameOverride });
-      const strapiImages = await buildStrapiImages({ version: strapiVersion, shouldPush: push, nodeVersions, imageStrapiNameOverride });
+      const baseImages = await buildBaseImages({ shouldPush: push, nodeVersions, imageBaseNameOverride, buildxPlatform });
+      const strapiImages = await buildStrapiImages({ version: strapiVersion, shouldPush: push, nodeVersions, imageStrapiNameOverride, buildxPlatform });
       logImages([...baseImages, ...strapiImages]);
       break;
     }

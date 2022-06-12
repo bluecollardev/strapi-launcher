@@ -3,10 +3,10 @@
 
 import semver from 'semver';
 
-import { execDocker, getLatestStrapiRelease } from './utils.mjs';
+import { execDocker, getLatestStrapiRelease, getBuildXArgs } from './utils.mjs';
 import { STRAPI_IMAGE_NAME, NODE_VERSIONS, LATEST_NODE_VERSION } from './constants.mjs';
 
-export async function buildStrapiImages({ version, shouldPush = false, nodeVersions = [...NODE_VERSIONS], imageStrapiNameOverride = STRAPI_IMAGE_NAME } = {}) {
+export async function buildStrapiImages({ version, shouldPush = false, nodeVersions = [...NODE_VERSIONS], imageStrapiNameOverride = STRAPI_IMAGE_NAME, buildxPlatform = false } = {}) {
   if (version === 'latest' || !version) {
     version = await getLatestStrapiRelease();
   }
@@ -18,13 +18,14 @@ export async function buildStrapiImages({ version, shouldPush = false, nodeVersi
   const createdTags = [];
 
   for (const nodeVersion of nodeVersions) {
-    const tags = await buildStrapiImage({ nodeVersion, version, shouldPush, imageStrapiNameOverride });
+    const tags = await buildStrapiImage({ nodeVersion, version, shouldPush, imageStrapiNameOverride, buildxPlatform });
     const alpineTags = await buildStrapiImage({
       nodeVersion,
       version,
       alpine: true,
       shouldPush,
-      imageStrapiNameOverride
+      imageStrapiNameOverride,
+      buildxPlatform
     });
 
     createdTags.push(...tags, ...alpineTags);
@@ -33,8 +34,10 @@ export async function buildStrapiImages({ version, shouldPush = false, nodeVersi
   return createdTags.map(tag => `${imageStrapiNameOverride}:${tag}`);
 }
 
-async function buildStrapiImage({ nodeVersion, version, alpine = false, shouldPush = false, imageStrapiNameOverride = STRAPI_IMAGE_NAME }) {
+async function buildStrapiImage({ nodeVersion, version, alpine = false, shouldPush = false, imageStrapiNameOverride = STRAPI_IMAGE_NAME, buildxPlatform = false }) {
   let tmpImg = `${imageStrapiNameOverride}:tmp`;
+
+  const { buildXCmd, buildXArgs } = getBuildXArgs(buildxPlatform);
 
   // We can't just pass in a STRAPI_VERSION like in the official strapi launcher, as it doesn't support version 4 and
   // parsing semvers in a Dockerfile is just a pain...
@@ -42,11 +45,13 @@ async function buildStrapiImage({ nodeVersion, version, alpine = false, shouldPu
   const majorVersion = version.split('.')[0]
   const strapiPackage = majorVersion < 4 ? `strapi@${version}` : `@strapi/strapi@${version}`;
   await execDocker([
+    ...buildXCmd,
     'build',
     '--build-arg',
     `BASE_VERSION=${nodeVersion}${alpine ? '-alpine' : ''}`,
     '--build-arg',
     `STRAPI_PKG=${strapiPackage}`,
+    ...buildXArgs,
     '-t',
     tmpImg,
     '--progress=plain',

@@ -56,6 +56,7 @@ Simply run `yarn build` to build using defaults. Run `yarn build -h` to view hel
 -n, --node-versions <nodeVersions...>                       Node (default: ["16"])
 -x, --image-base-name-override <imageBaseNameOverride>      Override the base image name (default: "strapi/base")
 -y, --image-strapi-name-override <imageStrapiNameOverride>  Override the strapi image name (default: "strapi/strapi")
+-b, --buildx-platform <buildxPlatform>                      IF exists THEN docker buildx build --platform <buildxPlatform> is used. ELSE docker build...
 -h, --help                                                  display help for command
 ```
 
@@ -81,4 +82,11 @@ Images created:
 - myregistry.com/strapi:4.1.12-alpine
 - myregistry.com/strapi:alpine
 ---------------------------------------
+```
+
+- Buildx platform
+
+Create an image for a target architecture and operating system using `docker buildx build`. When not set, the image will build using the default `docker build...`
+```
+yarn run build -b linux/amd64
 ```
