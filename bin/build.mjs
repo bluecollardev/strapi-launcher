@@ -22,7 +22,6 @@ program
   .option('-y, --image-strapi-name-override <imageStrapiNameOverride>', 'Override the strapi image name', STRAPI_IMAGE_NAME)
   .option('-b, --buildx-platform <buildxPlatform>', 'IF exists THEN docker buildx build --platform <buildxPlatform> is used. ELSE docker build...')
   .action((options) => {
-    console.log('optionshere', options)
     run(options).catch(error => {
       console.error(error);
       process.exit(1);
