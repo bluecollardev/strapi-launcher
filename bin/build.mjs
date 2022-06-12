@@ -21,7 +21,6 @@ program
   .option('-x, --image-base-name-override <imageBaseNameOverride>', 'Override the base image name', BASE_IMAGE_NAME)
   .option('-y, --image-strapi-name-override <imageStrapiNameOverride>', 'Override the strapi image name', STRAPI_IMAGE_NAME)
   .action((options) => {
-    console.log('optionshere', options)
     run(options).catch(error => {
       console.error(error);
       process.exit(1);
